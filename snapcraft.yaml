@@ -6,7 +6,7 @@ description: |
 
   Depend this part and prepend `classic-launch` to your app command list.
 
-  Note that this launcher don't magically solve the mixing host and snap libraries problem, which must by properly handled by the snap packaging or the snapped application.
+  Note that this launcher doesn't magically solve the mixing host and snap libraries problem, which must be properly handled by the snap packaging or the snapped application.
 
 grade: stable
 confinement: strict
