@@ -2,11 +2,12 @@ name: classic-launch
 version: current
 summary: A launcher part that sets the adapter for snaps in classic confinement
 description: |
-  This remote part provides a launcher that sets the adapter for snaps in classic confinement, which is not provided by snapcraft.
+  This remote part provide necessary runtime changes to deal with several problems in a snap with classic confinement.
 
-  Depend this part and prepend `classic-launch` to your app command list.
+  Refer the following snapcraft forum topic for more info:
 
-  Note that this launcher doesn't magically solve the mixing host and snap libraries problem, which must be properly handled by the snap packaging or the snapped application.
+      The classic-launch Remote Part - doc - snapcraft.io
+      https://forum.snapcraft.io/t/the-classic-launch-remote-part/9053
 
 grade: stable
 confinement: strict
