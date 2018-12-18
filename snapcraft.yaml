@@ -17,6 +17,6 @@ parts:
     plugin: dump
     source: launchers
     organize:
-      '*-launch': bin/
+      '*': bin/
     stage:
     - -README.*
