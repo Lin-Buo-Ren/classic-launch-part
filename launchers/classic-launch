@@ -11,10 +11,6 @@ set \
 	-o nounset \
 	-o pipefail
 
-# For enumerating possible snap icons without the failed one with asterisks
-shopt \
-	-s nullglob
-
 if ! test -v SNAP_ARCH_TRIPLET; then
 	# Markdown code syntax is not tilde expansion
 	# shellcheck disable=SC2016
@@ -33,98 +29,5 @@ else
 	export LD_LIBRARY_PATH
 fi
 LD_LIBRARY_PATH="$SNAP_LIBRARY_PATH":"$LD_LIBRARY_PATH"
-
-
-## Check for snap updates in background
-## Export CLASSIC_LAUNCH_ENABLE_UPDATE_CHECKER=true in snapcraft.yaml to enable this feature
-declare \
-	dir_config \
-	dir_cache
-dir_config="${SNAP_USER_COMMON}"/.config/"${SNAP_NAME}"-snap
-dir_cache="${SNAP_USER_COMMON}"/.cache/"${SNAP_NAME}"-snap
-
-if test -v CLASSIC_LAUNCH_ENABLE_UPDATE_CHECKER \
-	&& test "${CLASSIC_LAUNCH_ENABLE_UPDATE_CHECKER}" = true; then
-	if test -e "${dir_config}"/updates_available; then
-		printf -- \
-			'classic-launch: New updates are available!  You may update the snap by running the following command:\n\n' \
-			>&2
-		if test "${SNAP_REVISION:0:1}" = x; then
-			# This snap is installed locally
-			printf -- \
-				"    sudo snap refresh --amend --classic %s\\n\\n" \
-				"${SNAP_NAME}" \
-				>&2
-		else
-			printf -- \
-				"    sudo snap refresh --classic %s\\n\\n" \
-				"${SNAP_NAME}" \
-				>&2
-		fi
-
-		# Only prompt user if standard input device is a terminal
-		if test -t 0; then
-			printf -- \
-				'Press Enter to continue:' \
-				>&2
-			# Placeholder are only for halting purposes
-			# shellcheck disable=SC2034
-			read -r placeholder
-			unset placeholder
-
-		# Try sending desktop notification if possible
-		elif command -v notify-send &>/dev/null; then
-			declare \
-				icon_available=false \
-				notification_summary='The classic-launch Launcher' \
-				notification_message_body
-
-			notification_message_body="New updates are available!  You may update the snap by running the following command:\\n\\n"
-			if test "${SNAP_REVISION:0:1}" = x; then
-				# This snap is installed locally
-				notification_message_body+="    sudo snap refresh --amend --classic ${SNAP_NAME}"
-			else
-				notification_message_body+="    sudo snap refresh --classic ${SNAP_NAME}"
-			fi
-
-			# FIXME: We don't know which icon represents the snap or the launched snap app. so we randomly pick whatever comes first
-			for icon in "${SNAP}"/meta/gui/*.{png,svg}; do
-				icon_available=true
-				notify-send \
-					--icon="${icon}" \
-					"${notification_summary}" \
-					"${notification_message_body}"
-				break
-			done; unset icon
-
-			if "${icon_available}" = false; then
-				notify-send \
-					"${notification_summary}" \
-					"${notification_message_body}"
-			fi
-
-			unset \
-				icon_available \
-				notification_summary \
-				notification_message_body
-
-		# Do nothing
-		else
-			:
-		fi
-	else
-		mkdir \
-			--parents \
-			"${dir_cache}"
-		nohup \
-			classic-launch-update-checker \
-			>"${dir_cache}"/check-snap-updates-helper.log \
-			&
-	fi
-fi
-
-unset \
-	dir_config \
-	dir_cache
 
 exec "${@}"
