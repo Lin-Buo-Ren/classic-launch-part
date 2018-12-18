@@ -12,10 +12,12 @@ set \
 	-o pipefail
 
 if ! test -v SNAP_ARCH_TRIPLET; then
-    printf -- \
-        'classic-launch: Error: Packaging bug!  Please run `workaround-snap-arch-triplet-launch` before `classic launch`!\n' \
-        1>&2
-    exit 1
+	# Markdown code syntax is not tilde expansion
+	# shellcheck disable=SC2016
+	printf -- \
+		'classic-launch: Error: Packaging bug!  Please run `workaround-snap-arch-triplet-launch` before `classic launch`!\n' \
+		1>&2
+	exit 1
 fi
 
 PATH="$SNAP"/usr/sbin:"$SNAP"/usr/bin:"$SNAP"/sbin:"$SNAP"/bin:"$PATH"
