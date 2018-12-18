@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Post refresh hook for snap update maintainence, for classic confinement snaps
+set \
+	-o errexit \
+	-o errtrace \
+	-o nounset \
+	-o pipefail
+
+rm \
+    --force \
+    "${SNAP_USER_COMMON}"/.config/"${SNAP_NAME}"-snap/updates_available
+exit 0
